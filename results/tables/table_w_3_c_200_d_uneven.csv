@@ -1,0 +1,13 @@
+Policy,MeanReward,StdReward,MeanTime,StdTime
+perfect_hindsight,-10888.58,423.99,74.03,262.7
+imitation_learning,-11299.7,384.77,19217.97,6650.99
+myopic,-12665.47,549.59,1139.7,620.05
+genetic_programming,-11319.3,475.58,2803.8,745.83
+point_estimate_lookahead,-11611.65,485.83,3575142.86,5443387.16
+distributional_estimate_lookahead,-11089.98,406.33,3191098.15,4960486.57
+least_squares_policy_iteration,-11352.79,436.44,4794.0,1975.65
+deep_q_networks,-11385.86,533.3,36889.26,9184.96
+linear_programming_heuristic,-11188.27,406.15,2769740.05,4941704.5
+linear_programming_exact,-11089.03,407.7,10030303.36,5153987.56
+parameterized_lookahead_approximation,-11103.48,413.72,3177383.42,4933198.88
+proximal_policy_optimization,-11578.55,463.31,101985.22,13147.15

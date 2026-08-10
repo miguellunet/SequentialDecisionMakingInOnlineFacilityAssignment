@@ -1,0 +1,14 @@
+/.claude
+/.venv
+
+# training/: manter subpastas, ignorar ficheiros de resultados, mas guardar .py e .ipynb
+training/**
+!training/**/
+!training/*.py
+!training/*.ipynb
+!training/**/.gitkeep
+
+# instances/: manter subpastas, ignorar todos os ficheiros lá dentro
+instances/**
+!instances/**/
+!instances/**/.gitkeep
