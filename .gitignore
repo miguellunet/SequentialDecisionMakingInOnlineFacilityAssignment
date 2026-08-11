@@ -1,6 +1,12 @@
 /.claude
 /.venv
 
+# macOS
+**/.DS_Store
+
+# Python cache
+**/__pycache__/
+
 # training/: manter subpastas, ignorar ficheiros de resultados, mas guardar .py e .ipynb
 training/**
 !training/**/
@@ -8,7 +14,9 @@ training/**
 !training/*.ipynb
 !training/**/.gitkeep
 
-# instances/: manter subpastas, ignorar todos os ficheiros lá dentro
+# instances/: manter subpastas, ignorar ficheiros lá dentro, exceto instances_test e instances_extra
 instances/**
 !instances/**/
 !instances/**/.gitkeep
+!instances/instances_test/**
+!instances/instances_extra/**

@@ -1,4 +1,5 @@
 
+import string
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import matplotlib.animation as animation
@@ -152,9 +153,11 @@ def generate_warehouse_visualization():
                 else:
                     capacities = [30, 25, 20, 15, 10]
             # Plot warehouses
+            facility_letters = string.ascii_uppercase
             for i, (loc, cap) in enumerate(zip(warehouses_location, capacities)):
-                ax.add_patch(patches.Circle(loc, 8, fill=True, color=warehouse_colors[i % len(warehouse_colors)]))
-                ax.text(loc[0], loc[1] + 11, f"{cap}%", ha='center', fontsize=12, color='black')
+                ax.add_patch(patches.Circle(loc, 11, fill=True, facecolor=warehouse_colors[i % len(warehouse_colors)], edgecolor='black', linewidth=1.2, zorder=2))
+                ax.text(loc[0], loc[1], facility_letters[i % len(facility_letters)], ha='center', va='center', fontsize=11, color='black', zorder=3) #fontweight='bold'
+                ax.text(loc[0], loc[1] + 15, f"{cap}%", ha='center', fontsize=12, color='black')
 
         # Add distribution type text on the left side
         ax = axes[row, 0]
@@ -235,7 +238,7 @@ def generate_myopic_vs_lookahead_visualization():
             for i, loc in enumerate(warehouses_location):
                 ax.add_patch(patches.Circle(loc, 12, fill=True, color=warehouse_colors[i % len(warehouse_colors)]))
                 warehouse_name = f"{chr(65 + i)}"
-                ax.text(loc[0], loc[1]-3, warehouse_name, ha='center', fontsize=14, color='white', fontweight='bold')
+                ax.text(loc[0], loc[1]-3, warehouse_name, ha='center', fontsize=16, color='white', fontweight='bold')
 
 
             #Put legend indicating x coordinate and y coordinate
