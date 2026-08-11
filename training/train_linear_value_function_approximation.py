@@ -11,7 +11,7 @@ from sklearn.linear_model import LinearRegression
 from miscelaneous import distance_calculator
 
 
-class LSPIImprovedAgent:
+class LVFAAgent:
     """Fits a linear state-value function V(s) = theta . warehouses_capacity (raw,
     non-normalized, no intercept - so V(all-zero capacity) = 0 by construction) via
     Monte Carlo rollout targets, then acts greedily w.r.t. the one-step Bellman
@@ -187,7 +187,7 @@ def store_theta(num_warehouses, num_customers, capacity_distribution, include_sq
     from env import InventoryEnv
     env = InventoryEnv(num_warehouses=num_warehouses, num_customers=num_customers, capacity_distribution=capacity_distribution)
 
-    agent = LSPIImprovedAgent(env, discount_factor=0.99, alpha=0.01, num_iterations=500, num_simulations=100, stop_criterion=0, include_squared_capacity_feature=include_squared_capacity_feature)
+    agent = LVFAAgent(env, discount_factor=0.99, alpha=0.01, num_iterations=500, num_simulations=100, stop_criterion=0, include_squared_capacity_feature=include_squared_capacity_feature)
     agent.update_policy()
 
     data = {

@@ -41,11 +41,11 @@ class LeastSquaresPolicyIterationImprovedPolicy(BasePolicy):
     def act(self, state):
         capacities = np.array(state['warehouses_capacity'], dtype=float)
 
-        costs = []
+        rewards = []
         distances = []
         for i in range(len(capacities)):
             if capacities[i] == 0:
-                costs.append(float('inf'))
+                rewards.append(float('-inf'))
                 distances.append(float('inf'))
                 continue
             distance = distance_calculator(state['static_info']['warehouses_location'][i], state['new_customer'][1:3])
@@ -57,10 +57,11 @@ class LeastSquaresPolicyIterationImprovedPolicy(BasePolicy):
             else:
                 features = next_capacities
             next_value = np.dot(self.theta, features)
-            costs.append(distance - self.discount_factor * next_value)
-
-        best_cost = min(costs)
-        best_actions = [i for i, c in enumerate(costs) if c == best_cost]
+            rewards.append(-distance + self.discount_factor * next_value)
+        
+        best_reward = max(rewards)
+        best_actions = [i for i, r in enumerate(rewards) if r == best_reward]
         if len(best_actions) == 1:
             return best_actions[0]
-        return min(best_actions, key=lambda i: distances[i])
+        else:
+            return min(best_actions, key=lambda i: distances[i])
