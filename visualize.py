@@ -158,7 +158,7 @@ def generate_warehouse_visualization():
             for i, (loc, cap) in enumerate(zip(warehouses_location, capacities)):
                 ax.add_patch(patches.Circle(loc, 11, fill=True, facecolor=warehouse_colors[i % len(warehouse_colors)], edgecolor='black', linewidth=1.0, zorder=2))
                 label = ax.text(loc[0], loc[1], facility_letters[i % len(facility_letters)], ha='center', va='center', fontsize=11, color='white', zorder=3, fontweight='bold')
-                label.set_path_effects([path_effects.withStroke(linewidth=1, foreground='black')])
+                label.set_path_effects([path_effects.withStroke(linewidth=0.5, foreground='black')])
                 ax.text(loc[0], loc[1] + 15, f"{cap}%", ha='center', fontsize=12, color='black')
 
         # Add distribution type text on the left side
@@ -237,7 +237,7 @@ def generate_myopic_vs_lookahead_visualization():
                 ax.add_patch(patches.Circle(loc, 12, fill=True, facecolor=warehouse_colors[i % len(warehouse_colors)], edgecolor='black', linewidth=1.0, zorder=2))
                 warehouse_name = f"{chr(65 + i)}"
                 label = ax.text(loc[0], loc[1]-3, warehouse_name, ha='center', fontsize=16, color='white', fontweight='bold', zorder=3)
-                label.set_path_effects([path_effects.withStroke(linewidth=1, foreground='black')])
+                label.set_path_effects([path_effects.withStroke(linewidth=0.5, foreground='black')])
 
 
             #Put legend indicating x coordinate and y coordinate
@@ -270,9 +270,9 @@ def generate_dla_visualization():
 
     # Plot warehouses
     for i, (loc, cap) in enumerate(zip(warehouses_location, capacities)):
-        ax.add_patch(patches.Circle(loc, 10, fill=True, facecolor=warehouse_colors[i % len(warehouse_colors)], edgecolor='black', linewidth=1.0, zorder=2))
+        ax.add_patch(patches.Circle(loc, 10, fill=True, facecolor=warehouse_colors[i % len(warehouse_colors)], edgecolor='black', linewidth=0.5, zorder=2))
         label = ax.text(loc[0], loc[1]-3, f"{chr(65 + i)}", ha='center', fontsize=15, color='white', fontweight='bold', zorder=3)
-        label.set_path_effects([path_effects.withStroke(linewidth=1, foreground='black')])
+        label.set_path_effects([path_effects.withStroke(linewidth=0.5, foreground='black')])
 
     for i in range(-75, 76, 50):
         for j in range(-75, 76, 50):
@@ -288,9 +288,9 @@ def generate_dla_visualization():
 
     # Plot warehouses
     for i, (loc, cap) in enumerate(zip(warehouses_location, capacities)):
-        ax.add_patch(patches.Circle(loc, 10, fill=True, facecolor=warehouse_colors[i % len(warehouse_colors)], edgecolor='black', linewidth=1.0, zorder=2))
+        ax.add_patch(patches.Circle(loc, 10, fill=True, facecolor=warehouse_colors[i % len(warehouse_colors)], edgecolor='black', linewidth=0.5, zorder=2))
         label = ax.text(loc[0], loc[1]-3, f"{chr(65 + i)}", ha='center', fontsize=15, color='white', fontweight='bold', zorder=3)
-        label.set_path_effects([path_effects.withStroke(linewidth=1, foreground='black')])
+        label.set_path_effects([path_effects.withStroke(linewidth=0.5, foreground='black')])
 
     for i in range(-75, 76, 50):
         for j in range(-75, 76, 50):
@@ -310,9 +310,9 @@ def generate_dla_visualization():
 
     # Plot warehouses
     for i, (loc, cap) in enumerate(zip(warehouses_location, capacities)):
-        ax.add_patch(patches.Circle(loc, 10, fill=True, facecolor=warehouse_colors[i % len(warehouse_colors)], edgecolor='black', linewidth=1.0, zorder=2))
+        ax.add_patch(patches.Circle(loc, 10, fill=True, facecolor=warehouse_colors[i % len(warehouse_colors)], edgecolor='black', linewidth=0.5, zorder=2))
         label = ax.text(loc[0], loc[1]-3, f"{chr(65 + i)}", ha='center', fontsize=15, color='white', fontweight='bold', zorder=3)
-        label.set_path_effects([path_effects.withStroke(linewidth=1, foreground='black')])
+        label.set_path_effects([path_effects.withStroke(linewidth=0.5, foreground='black')])
 
     for i in range(-75, 76, 50):
         for j in range(-75, 76, 50):
