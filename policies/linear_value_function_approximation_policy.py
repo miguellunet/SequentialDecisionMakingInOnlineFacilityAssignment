@@ -38,6 +38,10 @@ class LeastSquaresPolicyIterationImprovedPolicy(BasePolicy):
         self.discount_factor = discount_factor
         self.include_squared_capacity_feature = include_squared_capacity_feature
 
+        # warm-up call, kept consistent with the other policies' init-time act() call
+        # even though this one has no real first-call cost to hide
+        self.act(self.env.obs)
+
     def act(self, state):
         capacities = np.array(state['warehouses_capacity'], dtype=float)
 

@@ -24,6 +24,13 @@ class ProximalPolicyOptimizationPolicy(BasePolicy):
             TRAIN_DIR / "proximal_policy_optimization_training" / "rl_models" / "ppo_models" / f"ppo_model_w_{num_warehouses}_c_{num_customers}_d_{capacity_distribution}"
         )
 
+        # first predict() pays PyTorch's one-time thread-pool/backend init cost plus
+        # sb3-contrib's masking/obs-conversion setup; warm it up here so it doesn't
+        # land inside the first timed act() call
+        dummy_obs = np.zeros(2 * num_warehouses, dtype=np.float32)
+        dummy_mask = np.ones(num_warehouses, dtype=bool)
+        self.model.predict(dummy_obs, action_masks=dummy_mask, deterministic=True)
+
     def _rl_get_state(self, state):
         data_rows = []
         for i in range(state['static_info']['num_warehouses']):

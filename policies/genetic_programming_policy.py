@@ -27,6 +27,10 @@ class GeneticProgrammingPolicy(BasePolicy):
         expression = df.iloc[0]['best_ind']
         self.compiled_expression = compile(expression, '<string>', 'eval')
 
+        # warm-up call, kept consistent with the other policies' init-time act() call
+        # even though this one has no real first-call cost to hide
+        self.act(self.env.obs)
+
     def act(self, state):
         add, sub, mult, div = _add, _sub, _mult, _div
 

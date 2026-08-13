@@ -16,6 +16,11 @@ class LinearProgrammingHeuristicPolicy(BasePolicy):
         self.num_warehouses = num_warehouses
         self.num_regions = num_regions
 
+        # first perfect_hindsight() call pays Gurobi's one-time environment/license
+        # checkout cost; warm it up here so it doesn't land inside the first timed
+        # act() call
+        self.act(self.env.obs)
+
     def act(self, state):
         current_instance = generate_regions_instance(state['customers_left'], self.num_regions, self.env.grid_size, state['new_customer'][1:3])
         _, _, dual_values = perfect_hindsight(

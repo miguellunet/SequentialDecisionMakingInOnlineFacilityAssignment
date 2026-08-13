@@ -14,6 +14,14 @@ class PointEstimateLookaheadPolicy(BasePolicy):
         super().__init__(env)
         self.dla_param = dla_param
 
+        # first perfect_hindsight() call pays Gurobi's one-time environment/license
+        # checkout cost; warm it up here so it doesn't land inside the first timed
+        # act() call. dla_instance is normally built in reset() per episode, but
+        # act() needs one to run at all, so build a throwaway one here too - it gets
+        # overwritten by the real reset() before the first real episode.
+        self.dla_instance = generate_dla_instance(self.env.num_customers, self.env.grid_size)
+        self.act(self.env.obs)
+
     def reset(self, instance):
         super().reset(instance)
         self.dla_instance = generate_dla_instance(self.env.num_customers, self.env.grid_size)

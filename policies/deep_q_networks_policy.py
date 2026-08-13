@@ -19,6 +19,11 @@ class DeepQNetworksPolicy(BasePolicy):
             TRAIN_DIR / "deep_q_networks_training" / "rl_models" / "dqn_models" / f"dqn_model_w_{num_warehouses}_c_{num_customers}_d_{capacity_distribution}"
         )
 
+        # first forward pass pays PyTorch's one-time thread-pool/backend init cost;
+        # warm it up here so it doesn't land inside the first timed act() call
+        with torch.no_grad():
+            self.model.q_net(torch.zeros(1, 2 * num_warehouses, dtype=torch.float32))
+
     def _rl_get_state(self, state):
         '''
         data_rows = [state['booked_customers'] / state['static_info']['num_customers']]

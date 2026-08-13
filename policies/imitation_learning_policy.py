@@ -26,6 +26,11 @@ class ImitationLearningPolicy(BasePolicy):
         self.model_nn.load_state_dict(state_dict)
         self.model_nn.eval()
 
+        # first forward pass pays PyTorch's one-time thread-pool/backend init cost;
+        # warm it up here so it doesn't land inside the first timed act() call
+        with torch.no_grad():
+            self.model_nn(torch.zeros(1, 2 * num_warehouses, dtype=torch.float32))
+
     def act(self, state):
         
         warehouses_distance = state["warehouses_distance"]
