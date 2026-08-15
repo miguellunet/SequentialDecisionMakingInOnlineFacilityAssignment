@@ -175,22 +175,19 @@ def generate_myopic_vs_lookahead_visualization():
     from policies.myopic_policy import MyopicPolicy
     from policies.linear_programming_exact import LinearProgrammingExactPolicy
 
-    fig, axes = plt.subplots(3, 4, figsize=(15, 10), gridspec_kw={'width_ratios': [0.2, 1, 1, 1], 'height_ratios': [0.2, 1, 1]})  # 3 rows, 4 columns with adjusted ratios
-    for ax in axes[0, :]:
-        ax.axis('off')  # Turn off the top row
-    for ax in axes[:, 0]:
-        ax.axis('off')  # Turn off the leftmost column
+    fig, axes = plt.subplots(2, 3, figsize=(12, 8))
 
-    warehouse_colors = ['#2b83ba','#fdae61','#abdda4','#d7191c','#ffffbf']
-    capacity_distribution_settings = [[50,50], [80,20], [20,80]]
+    warehouse_colors = ['#2b83ba', '#fdae61', '#abdda4', '#d7191c', '#ffffbf']
+    capacity_distribution_settings = [[50, 50], [80, 20], [20, 80]]
     warehouses_location = [[-50, -50], [50, 50]]
 
     # act() only reads env.grid_size, so one shared env instance is enough for every
     # cell/policy below regardless of that cell's own capacity distribution
-    env = InventoryEnv(num_warehouses=2, num_customers=100, capacity_distribution='uniform', grid_size=200)
+    env = InventoryEnv(num_warehouses=2, num_customers=100,
+                       capacity_distribution='uniform', grid_size=200)
     policies = {
         "myopic": MyopicPolicy(env),
-        "lookahead": LinearProgrammingExactPolicy(env, num_warehouses=2, num_regions=100),
+        "non-myopic": LinearProgrammingExactPolicy(env, num_warehouses=2, num_regions=100),
     }
 
     def make_state(position, warehouses_capacity):
@@ -201,55 +198,56 @@ def generate_myopic_vs_lookahead_visualization():
             'customers_left': sum(warehouses_capacity),
         }
 
-    for row, distribution_type in enumerate(["myopic", "lookahead"]):
+    for row, distribution_type in enumerate(["myopic", "non-myopic"]):
         policy = policies[distribution_type]
 
-        #Print "greedy" and "lookahead" in the leftmost column
-        ax = axes[row+1, 0]
-        ax.text(0.5, 0.55, f"{distribution_type.capitalize()}", fontsize=15, ha='center')
-        ax.text(0.5, 0.45, "policy", fontsize=15, ha='center')
-
         for col, capacity_distribution in enumerate(capacity_distribution_settings):
-
-            #Write the capacity distribution in the top row
-            ax = axes[0, col+1]
-            # Write "Capacity Distribution" in the top row
-            ax.text(0.5, 0.5, "Capacity distribution", fontsize=15, ha='center')
-            ax.text(0.3, 0.2, f"{capacity_distribution[0]}%", fontsize=15, ha='center', color=warehouse_colors[0])
-            ax.text(0.7, 0.2, f"{capacity_distribution[1]}%", fontsize=15, ha='center', color=warehouse_colors[1])
-
-            ax = axes[row+1, col+1]
+            ax = axes[row, col]
             ax.set_xlim(-100, 100)
             ax.set_ylim(-100, 100)
             ax.set_aspect('equal', adjustable='box')
             ax.set_xticks(np.arange(-100, 101, 50))
             ax.set_yticks(np.arange(-100, 101, 50))
+
             square = 10
-            for i in range(-100+int(square/2), 101-int(square/2), int(square)):
-                for j in range(-100+int(square/2), 101-int(square/2), int(square)):
+            for i in range(-100 + int(square / 2), 101 - int(square / 2), int(square)):
+                for j in range(-100 + int(square / 2), 101 - int(square / 2), int(square)):
                     state = make_state((i, j), capacity_distribution)
                     action = policy.act(state)
                     color = warehouse_colors[action]
-
-                    ax.add_patch(plt.Rectangle((i-square/2, j-square/2), square, square, fill=True, color=color, alpha=0.3))#
+                    ax.add_patch(plt.Rectangle((i - square / 2, j - square / 2), square, square,
+                                               fill=True, color=color, alpha=0.3))
 
             for i, loc in enumerate(warehouses_location):
-                ax.add_patch(patches.Circle(loc, 12, fill=True, facecolor=warehouse_colors[i % len(warehouse_colors)], edgecolor='black', linewidth=1.0, zorder=2))
+                ax.add_patch(patches.Circle(loc, 12, fill=True,
+                                            facecolor=warehouse_colors[i % len(warehouse_colors)],
+                                            edgecolor='black', linewidth=1.0, zorder=2))
                 warehouse_name = f"{chr(65 + i)}"
-                label = ax.text(loc[0], loc[1]-3, warehouse_name, ha='center', fontsize=16, color='white', fontweight='bold', zorder=3)
+                label = ax.text(loc[0], loc[1] - 3, warehouse_name, ha='center', fontsize=16,
+                                color='white', fontweight='bold', zorder=3)
                 label.set_path_effects([path_effects.withStroke(linewidth=0.5, foreground='black')])
 
+            # Row label: policy name, attached to the left-hand panel
+            if col == 0:
+                ax.set_ylabel(f"{distribution_type.capitalize()}\npolicy",
+                              fontsize=15, labelpad=8)
 
-            #Put legend indicating x coordinate and y coordinate
-            #ax.text(0.5, -0.1, "X coordinate", fontsize=12, ha='center', va='center', transform=ax.transAxes)
-            #ax.text(-0.1, 0.5, "Y coordinate", fontsize=12, ha='center', va='center', rotation=90, transform=ax.transAxes)
+            # Column header: capacity distribution, attached above the top row
+            if row == 0:
+                ax.text(0.5, 1.16, "Capacity distribution", fontsize=15,
+                        ha='center', va='bottom', transform=ax.transAxes)
+                ax.text(0.3, 1.05, f"{capacity_distribution[0]}%", fontsize=15,
+                        ha='center', va='bottom', color=warehouse_colors[0],
+                        transform=ax.transAxes)
+                ax.text(0.7, 1.05, f"{capacity_distribution[1]}%", fontsize=15,
+                        ha='center', va='bottom', color=warehouse_colors[1],
+                        transform=ax.transAxes)
 
     plt.tight_layout()
+    plt.subplots_adjust(wspace=0.15, hspace=0.15)
 
-    #Save the figure
-    plt.savefig('visualization_examples/myopic_vs_lookahead.pdf', dpi=600)
+    plt.savefig('visualization_examples/myopic_vs_lookahead.pdf', bbox_inches='tight', dpi=600)
     plt.show()
-
 
 def generate_dla_visualization():
     fig, axes = plt.subplots(1, 3, figsize=(15, 5))  # 2 rows, 3 columns
@@ -336,7 +334,7 @@ def generate_dla_visualization():
 
 if __name__ == "__main__":
 
-    
+    '''
     visualize_assignments(
         warehouses_location=[[-50, -50], [50, 50]],
         all_warehouses=[0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0],
@@ -397,5 +395,9 @@ if __name__ == "__main__":
         state, reward, done, truncated, _ = env.step(action)
 
     visualize(env.warehouses_location, env.warehouses_initial_capacity, env.all_warehouses, env.all_customers, env.all_capacities)
+    '''
+
+    # Call the function to generate the myopic vs lookahead visualization
+    generate_myopic_vs_lookahead_visualization()
     
     
