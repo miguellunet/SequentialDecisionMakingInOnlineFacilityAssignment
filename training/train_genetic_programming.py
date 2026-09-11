@@ -18,6 +18,7 @@ import numpy as np
 import random
 import pandas as pd
 import csv
+import time
 
 def run_episode(env, policy_function, gp_expression):
     state, info = env.reset()
@@ -64,7 +65,9 @@ def my_strategy(env, state, expression=''):
         #CAPACITY_CLOSEST_3 = np.sum([state['warehouses_capacity'][j] for j in state['static_info']['warehouses_proximity'][i][0:3]])
         scores[i] = eval(compiled_expression)
 
-    action = max(scores, key=scores.get)
+    best_score = max(scores.values())
+    tied = [i for i, score in scores.items() if score == best_score]
+    action = min(tied, key=lambda i: state['warehouses_distance'][i])
 
     return action
 
@@ -81,25 +84,26 @@ def div(a, b):  return b and a / b or 0
 
 #def max(a, b): return a if a > b else b
 
-#def min(a, b): return a if a < b else b
-
-
-
-#num_warehouses = 5
-#num_customers = 400
-#capacity_distribution = 'uneven'
-
 def train_gp(num_warehouses, num_customers, capacity_distribution):
 
-    population_size           = 100
+    population_size           = 50
     num_generations           = 100
-    crossover_probability     = 0.25
-    mutation_probability      = 0.50
+    crossover_probability     = 0.80
+    mutation_probability      = 0.10
     elitism_rate              = 0.10
-    min_depth                 = 0     
+    min_depth                 = 0
     max_depth                 = 4
-    n_ep                      = 10
+    n_ep                      = 50
     gp_seed                   = 42
+
+    # Seeded here, first thing, rather than right before toolbox.population() below -
+    # so determinism doesn't depend on nothing else in this function consuming
+    # random()/np.random between this line and population creation (DEAP's own
+    # operators - genHalfAndHalf, selTournament, cxOnePoint, mutUniform - all draw from
+    # the stdlib random module, which DEAP doesn't let you swap for a local instance,
+    # so a global seed is the actual extent of control available here).
+    random.seed(gp_seed)
+    np.random.seed(gp_seed)
 
     env = InventoryEnv(num_warehouses, num_customers, capacity_distribution)
 
@@ -179,9 +183,6 @@ def train_gp(num_warehouses, num_customers, capacity_distribution):
 
     print("Model started running.")
 
-    random.seed(gp_seed)
-    np.random.seed(gp_seed)
-        
     halloffame = tools.HallOfFame(maxsize=int(elitism_rate*population_size))
     pop = toolbox.population(n=population_size)
 
@@ -294,7 +295,28 @@ options_num_warehouses = [2, 3, 4, 5]
 options_num_customers = [50, 100, 200, 400]
 options_capacity_distribution = ['uniform', 'uneven']
 
+options_num_warehouses = [2]
+options_num_customers = [50]
+options_capacity_distribution = ['uniform']
+
+training_times = []  # one row per (num_warehouses, num_customers, capacity_distribution) family
+
 for num_warehouses in options_num_warehouses:
     for num_customers in options_num_customers:
         for capacity_distribution in options_capacity_distribution:
+            start_time = time.perf_counter()
             train_gp(num_warehouses, num_customers, capacity_distribution)
+            training_time_minutes = (time.perf_counter() - start_time) / 60
+
+            training_times.append({
+                'num_warehouses': num_warehouses,
+                'num_customers': num_customers,
+                'capacity_distribution': capacity_distribution,
+                'training_time': round(training_time_minutes, 2),
+            })
+
+info_dir = os.path.join(TRAIN_DIR, 'genetic_programming_training')
+os.makedirs(info_dir, exist_ok=True)
+
+training_times_df = pd.DataFrame(training_times)
+training_times_df.to_csv(os.path.join(info_dir, 'genetic_programming_training_times.csv'), index=False, float_format='%.5f')

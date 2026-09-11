@@ -110,7 +110,11 @@ class InventoryEnv(Env):
         high_dim = np.array([1 for i in range(obs_dim)])
         self.observation_space = spaces.Box(low = low_dim, high = high_dim, dtype = np.float32)
         self.action_space = spaces.Discrete(self.num_warehouses)
-    
+
+    def set_seed(self, seed):
+        self.seed = seed
+        np.random.seed(self.seed)
+        
     def refresh_seed(self):
         np.random.seed(self.seed)
 

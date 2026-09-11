@@ -31,16 +31,12 @@ def create_instances(seed, subfolder=''):
         json.dump(instances_json, f)
 
 if __name__ == "__main__":
-    
-    for seed in range(1, 21):
+
+    for seed in range(10001, 11001):
         create_instances(seed, subfolder='instances_test/')
 
-    for seed in range(21, 31):
-            create_instances(seed, subfolder='instances_extra/')
-
-    for seed in range(31, 51):
+    for seed in range(20001, 25001):
         create_instances(seed, subfolder='instances_train_imitation_learning/')
 
-    for seed in range(51, 1051):
-        create_instances(seed, subfolder='instances_train_imitation_learning/')
-
+    for seed in range(30001, 30501):
+            create_instances(seed, subfolder='instances_train_parameterized_lookahead_approximation/')

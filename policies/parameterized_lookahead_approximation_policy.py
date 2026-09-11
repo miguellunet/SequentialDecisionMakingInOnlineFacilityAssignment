@@ -27,12 +27,24 @@ class ParameterizedLookaheadApproximationPolicy(BasePolicy):
                 & (cfa_params_df['num_customers'] == num_customers)
                 & (cfa_params_df['capacity_distribution'] == capacity_distribution)
             ]
-            self.param = row['best_param'].values[0]
+            # ..._best_params.csv is appended to on every training run (see
+            # train_parameterized_lookahead_approximation.ipynb) - values[-1] takes the
+            # most recent run for this family, not the first one ever recorded.
+            self.param = row['best_param'].values[-1]
 
         # first perfect_hindsight() call pays Gurobi's one-time environment/license
         # checkout cost; warm it up here so it doesn't land inside the first timed
-        # act() call
-        self.act(self.env.obs)
+        # act() call. Use a synthetic full-capacity state instead of self.env.reset() -
+        # self.env is the same shared object run_episode later evaluates real policies
+        # against (see export_results.py), so resetting it here would mutate real state
+        # for no reason; a fake state sidesteps that entirely.
+        warmup_state = {
+            'customers_left': self.env.num_customers,
+            'new_customer': [0, 0.0, 0.0, 1],
+            'warehouses_capacity': self.env.warehouses_initial_capacity.copy(),
+            'static_info': {'warehouses_location': self.env.warehouses_location},
+        }
+        self.act(warmup_state)
 
     def act(self, state):
         current_instance = generate_regions_instance(state['customers_left'], self.num_regions, self.env.grid_size, state['new_customer'][1:3])

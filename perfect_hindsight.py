@@ -2,6 +2,11 @@ from miscelaneous import distance_calculator
 from gurobipy import GRB, Model
 import numpy as np
 
+# Fixes Gurobi's own internal tie-breaking/search order, so a MIP with multiple
+# equally-optimal solutions (e.g. the binary assignment PHS and PEL solve) returns the
+# same one every run instead of depending on thread-scheduling nondeterminism.
+GUROBI_SEED = 42
+
 def perfect_hindsight(instance, warehouses_location, warehouses_initial_capacity, num_customers, divisible = False, divisible_except_first_one = False):
 
     # despite the name, this one function is the shared MIP engine behind several
@@ -64,6 +69,7 @@ def perfect_hindsight(instance, warehouses_location, warehouses_initial_capacity
 
     # Make the model quiet
     m.setParam('OutputFlag', 0)
+    m.setParam('Seed', GUROBI_SEED)
 
     # Optimize model
     m.optimize()

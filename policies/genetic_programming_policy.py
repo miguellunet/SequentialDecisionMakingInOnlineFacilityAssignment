@@ -24,7 +24,10 @@ class GeneticProgrammingPolicy(BasePolicy):
             & (df['num_customers'] == num_customers)
             & (df['capacity_distribution'] == capacity_distribution)
         ]
-        expression = df.iloc[0]['best_ind']
+        # ALL_TIME_best_individual.csv is appended to on every training run (see
+        # train_genetic_programming.py) - iloc[-1] takes the most recent run for this
+        # family, not the first one ever recorded.
+        expression = df.iloc[-1]['best_ind']
         self.compiled_expression = compile(expression, '<string>', 'eval')
 
         # warm-up call, kept consistent with the other policies' init-time act() call
@@ -49,4 +52,8 @@ class GeneticProgrammingPolicy(BasePolicy):
             INITIAL_CAPACITY = state['static_info']['warehouses_initial_capacity'][i]
             scores[i] = eval(self.compiled_expression)
 
-        return max(scores, key=scores.get)
+        best_score = max(scores.values())
+        tied = [i for i, score in scores.items() if score == best_score]
+        action = min(tied, key=lambda i: state['warehouses_distance'][i])
+
+        return action

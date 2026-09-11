@@ -14,7 +14,10 @@ def read_theta(num_warehouses, num_customers, capacity_distribution):
     df = pd.read_csv(f'{TRAIN_DIR}/linear_value_function_approximation_training/theta.csv')
 
     df = df[(df['num_warehouses'] == num_warehouses) & (df['num_customers'] == num_customers) & (df['capacity_distribution'] == capacity_distribution)]
-    theta = np.array(list(map(float, df['theta'].iloc[0].split(','))))
+    # theta.csv is appended to on every training run (see
+    # train_linear_value_function_approximation.py) - iloc[-1] takes the most recent
+    # run for this family, not the first one ever recorded.
+    theta = np.array(list(map(float, df['theta'].iloc[-1].split(','))))
     return theta
 
 

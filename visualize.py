@@ -173,21 +173,21 @@ def generate_warehouse_visualization():
 def generate_myopic_vs_lookahead_visualization():
     from env import InventoryEnv
     from policies.myopic_policy import MyopicPolicy
-    from policies.linear_programming_exact import LinearProgrammingExactPolicy
+    from policies.exact_value_function_policy import ExactValueFunctionPolicy
 
     fig, axes = plt.subplots(2, 3, figsize=(12, 8))
 
     warehouse_colors = ['#2b83ba', '#fdae61', '#abdda4', '#d7191c', '#ffffbf']
-    capacity_distribution_settings = [[50, 50], [80, 20], [20, 80]]
+    capacity_distribution_settings = [[25, 25], [24, 6], [6, 24]]
     warehouses_location = [[-50, -50], [50, 50]]
 
     # act() only reads env.grid_size, so one shared env instance is enough for every
     # cell/policy below regardless of that cell's own capacity distribution
-    env = InventoryEnv(num_warehouses=2, num_customers=100,
+    env = InventoryEnv(num_warehouses=2, num_customers=50,
                        capacity_distribution='uniform', grid_size=200)
     policies = {
         "myopic": MyopicPolicy(env),
-        "non-myopic": LinearProgrammingExactPolicy(env, num_warehouses=2, num_regions=100),
+        "optimal": ExactValueFunctionPolicy(env, num_warehouses=2, num_customers=50, capacity_distribution='uniform')
     }
 
     def make_state(position, warehouses_capacity):
@@ -198,7 +198,7 @@ def generate_myopic_vs_lookahead_visualization():
             'customers_left': sum(warehouses_capacity),
         }
 
-    for row, distribution_type in enumerate(["myopic", "non-myopic"]):
+    for row, distribution_type in enumerate(["myopic", "optimal"]):
         policy = policies[distribution_type]
 
         for col, capacity_distribution in enumerate(capacity_distribution_settings):
@@ -209,7 +209,7 @@ def generate_myopic_vs_lookahead_visualization():
             ax.set_xticks(np.arange(-100, 101, 50))
             ax.set_yticks(np.arange(-100, 101, 50))
 
-            square = 10
+            square = 2
             for i in range(-100 + int(square / 2), 101 - int(square / 2), int(square)):
                 for j in range(-100 + int(square / 2), 101 - int(square / 2), int(square)):
                     state = make_state((i, j), capacity_distribution)
@@ -236,10 +236,10 @@ def generate_myopic_vs_lookahead_visualization():
             if row == 0:
                 ax.text(0.5, 1.16, "Capacity distribution", fontsize=15,
                         ha='center', va='bottom', transform=ax.transAxes)
-                ax.text(0.3, 1.05, f"{capacity_distribution[0]}%", fontsize=15,
+                ax.text(0.3, 1.05, f"{capacity_distribution[0]/(capacity_distribution[0] + capacity_distribution[1]) * 100:.0f}%", fontsize=15,
                         ha='center', va='bottom', color=warehouse_colors[0],
                         transform=ax.transAxes)
-                ax.text(0.7, 1.05, f"{capacity_distribution[1]}%", fontsize=15,
+                ax.text(0.7, 1.05, f"{capacity_distribution[1]/(capacity_distribution[0] + capacity_distribution[1]) * 100:.0f}%", fontsize=15,
                         ha='center', va='bottom', color=warehouse_colors[1],
                         transform=ax.transAxes)
 
@@ -334,6 +334,8 @@ def generate_dla_visualization():
 
 if __name__ == "__main__":
 
+    # Call the function to generate the myopic vs lookahead visualization
+    generate_myopic_vs_lookahead_visualization()
     '''
     visualize_assignments(
         warehouses_location=[[-50, -50], [50, 50]],

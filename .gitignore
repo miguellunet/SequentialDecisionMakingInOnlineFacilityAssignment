@@ -14,9 +14,13 @@ training/**
 !training/*.ipynb
 !training/**/.gitkeep
 
+training_old/
+results_MEIANOITE/
+
 # instances/: manter subpastas, ignorar ficheiros lá dentro, exceto instances_test e instances_extra
 instances/**
 !instances/**/
 !instances/**/.gitkeep
-!instances/instances_test/**
-!instances/instances_extra/**
+!instances/instances_test/**.gitkeep
+!instances/instances_train_imitation_learning/**.gitkeep
+!instances/instances_train_parameterized_lookahead_approximation/**.gitkeep

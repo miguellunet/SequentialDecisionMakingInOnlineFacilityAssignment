@@ -1,5 +1,6 @@
 import os
 import sys
+import time
 
 TRAIN_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(TRAIN_DIR))
@@ -183,11 +184,20 @@ class LVFAAgent:
             return min(best_actions, key=lambda i: distances[i])
 
 
+LVFA_SEED = 42
+
 def store_theta(num_warehouses, num_customers, capacity_distribution, include_squared_capacity_feature=False):
     from env import InventoryEnv
     env = InventoryEnv(num_warehouses=num_warehouses, num_customers=num_customers, capacity_distribution=capacity_distribution)
 
-    agent = LVFAAgent(env, discount_factor=0.99, alpha=0.01, num_iterations=500, num_simulations=100, stop_criterion=0, include_squared_capacity_feature=include_squared_capacity_feature)
+    # Deliberate reseed: LVFAAgent.simulate_policy()'s only randomness is
+    # env.create_customer() (via numpy's *global* RNG, since no instance is ever set
+    # here). Without this, training only happened to be deterministic because nothing
+    # else touched np.random between InventoryEnv's own internal seed(0) and this
+    # point - this reseed makes that explicit and independent of that accident.
+    np.random.seed(LVFA_SEED)
+
+    agent = LVFAAgent(env, discount_factor=0.99, alpha=1/200, num_iterations=500, num_simulations=100, stop_criterion=0, include_squared_capacity_feature=include_squared_capacity_feature)
     agent.update_policy()
 
     data = {
@@ -207,8 +217,26 @@ num_customers_options = [50, 100, 200, 400]
 capacity_distribution_options = ['uniform', 'uneven']
 
 if __name__ == "__main__":
+    training_times = []  # one row per (num_warehouses, num_customers, capacity_distribution) family
+
     for num_customers in num_customers_options:
         for num_warehouses in num_warehouses_options:
             for capacity_distribution in capacity_distribution_options:
                 print(f'Running for {num_warehouses} warehouses, {num_customers} customers, {capacity_distribution} capacity distribution')
+
+                start_time = time.perf_counter()
                 store_theta(num_warehouses, num_customers, capacity_distribution, False)
+                training_time_minutes = (time.perf_counter() - start_time) / 60
+
+                training_times.append({
+                    'num_warehouses': num_warehouses,
+                    'num_customers': num_customers,
+                    'capacity_distribution': capacity_distribution,
+                    'training_time': round(training_time_minutes, 2),
+                })
+
+    info_dir = os.path.join(TRAIN_DIR, 'linear_value_function_approximation_training')
+    os.makedirs(info_dir, exist_ok=True)
+
+    training_times_df = pd.DataFrame(training_times)
+    training_times_df.to_csv(os.path.join(info_dir, 'linear_value_function_approximation_training_times.csv'), index=False, float_format='%.5f')

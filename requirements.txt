@@ -11,3 +11,4 @@ tensorflow==2.21.0
 seaborn==0.13.2
 gurobipy==13.0.2
 scienceplots==2.2.2
+scikit-posthocs==0.17.0

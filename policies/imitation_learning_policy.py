@@ -20,7 +20,7 @@ class ImitationLearningPolicy(BasePolicy):
         self.num_warehouses = num_warehouses
         self.model_nn = ImitationLearningNet(num_warehouses)
         state_dict = torch.load(
-            TRAIN_DIR / "imitation_learning_training" / "imitation_learning_models" / f"model_nn_w_{num_warehouses}_c_{num_customers}_d_{capacity_distribution}.pt",
+            TRAIN_DIR / "imitation_learning_training" / "imitation_learning_models" / f"model_nn_w_{num_warehouses}_c_50_d_{capacity_distribution}.pt",
             map_location="cpu",
         )
         self.model_nn.load_state_dict(state_dict)
