@@ -75,7 +75,7 @@ def export_results(num_warehouses, num_customers, capacity_distribution):
 
     
     if num_customers == 50:
-
+        
         policies = {
             'perfect_hindsight': PerfectHindsightPolicy(env),
             'imitation_learning': ImitationLearningPolicy(env, num_warehouses, num_customers, capacity_distribution),
@@ -108,6 +108,7 @@ def export_results(num_warehouses, num_customers, capacity_distribution):
                     'parameterized_lookahead_approximation': ParameterizedLookaheadApproximationPolicy(env, num_warehouses, num_customers, capacity_distribution),
                     'proximal_policy_optimization': ProximalPolicyOptimizationPolicy(env, num_warehouses, num_customers, capacity_distribution)
         }
+
     
     results = []
     full_results = []
@@ -142,8 +143,12 @@ def export_results(num_warehouses, num_customers, capacity_distribution):
     full_results_df = pd.DataFrame(full_results)
 
     # Save the results to a CSV file
+    #results_df.to_csv(f'results/tables/table_w_{num_warehouses}_c_{num_customers}_d_{capacity_distribution}.csv', mode='a', header=not os.path.exists(f'results/tables/table_w_{num_warehouses}_c_{num_customers}_d_{capacity_distribution}.csv'), index=False)
+    #full_results_df.to_csv(f'results/full_tables/full_results_w_{num_warehouses}_c_{num_customers}_d_{capacity_distribution}.csv', mode='a', header=not os.path.exists(f'results/full_tables/full_results_w_{num_warehouses}_c_{num_customers}_d_{capacity_distribution}.csv'), index=False)
+
     results_df.to_csv(f'results/tables/table_w_{num_warehouses}_c_{num_customers}_d_{capacity_distribution}.csv', mode='a', header=not os.path.exists(f'results/tables/table_w_{num_warehouses}_c_{num_customers}_d_{capacity_distribution}.csv'), index=False)
     full_results_df.to_csv(f'results/full_tables/full_results_w_{num_warehouses}_c_{num_customers}_d_{capacity_distribution}.csv', mode='a', header=not os.path.exists(f'results/full_tables/full_results_w_{num_warehouses}_c_{num_customers}_d_{capacity_distribution}.csv'), index=False)
+    
 
 
 num_warehouses_options = [2, 3, 4, 5]

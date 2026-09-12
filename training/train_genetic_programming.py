@@ -86,14 +86,14 @@ def div(a, b):  return b and a / b or 0
 
 def train_gp(num_warehouses, num_customers, capacity_distribution):
 
-    population_size           = 50
+    population_size           = 100
     num_generations           = 100
     crossover_probability     = 0.80
     mutation_probability      = 0.10
     elitism_rate              = 0.10
     min_depth                 = 0
     max_depth                 = 4
-    n_ep                      = 50
+    n_ep                      = 20
     gp_seed                   = 42
 
     # Seeded here, first thing, rather than right before toolbox.population() below -
@@ -120,14 +120,14 @@ def train_gp(num_warehouses, num_customers, capacity_distribution):
 
         # Check if the individual's fitness is already cached
         if individual_str in fitness_cache:
-            print(f"Using cached fitness for individual: {individual_str}")
+            #print(f"Using cached fitness for individual: {individual_str}")
             return fitness_cache[individual_str]
 
         # If not cached, evaluate the individual
         mean_reward = evaluate_gp_policy(env, my_strategy, str(individual), n_eval_episodes=n_ep)
         fitness_cache[individual_str] = (mean_reward,)  # Cache the fitness value as a tuple
 
-        print("Mean reward: ", mean_reward)
+        #print("Mean reward: ", mean_reward)
         return (mean_reward,)
     
 
@@ -181,7 +181,7 @@ def train_gp(num_warehouses, num_customers, capacity_distribution):
     toolbox.decorate("mutate", history.decorator)
     halloffame = tools.HallOfFame(maxsize=10)
 
-    print("Model started running.")
+    #print("Model started running.")
 
     halloffame = tools.HallOfFame(maxsize=int(elitism_rate*population_size))
     pop = toolbox.population(n=population_size)
@@ -226,7 +226,7 @@ def train_gp(num_warehouses, num_customers, capacity_distribution):
 
     for gen in range(num_generations):
         
-        print("Generation: ",gen)
+        #print("Generation: ",gen)
         
         pop, logbook = algorithms.eaSimple(pop, toolbox, cxpb=crossover_probability, mutpb=mutation_probability, ngen=1, halloffame=halloffame, verbose=True)
         
@@ -284,10 +284,10 @@ def train_gp(num_warehouses, num_customers, capacity_distribution):
     logbook = tools.Logbook()
     logbook.record(gen=num_generations, nevals=population_size, fitness=record)
         
-    print("Best Individual from the last generation:")
-    print(best_ind)
-    print(best_ind.fitness.values[0])
-    print(logbook)
+    #print("Best Individual from the last generation:")
+    #print(best_ind)
+    #print(best_ind.fitness.values[0])
+    #print(logbook)
 
 
 
@@ -295,15 +295,12 @@ options_num_warehouses = [2, 3, 4, 5]
 options_num_customers = [50, 100, 200, 400]
 options_capacity_distribution = ['uniform', 'uneven']
 
-options_num_warehouses = [2]
-options_num_customers = [50]
-options_capacity_distribution = ['uniform']
-
 training_times = []  # one row per (num_warehouses, num_customers, capacity_distribution) family
 
 for num_warehouses in options_num_warehouses:
     for num_customers in options_num_customers:
         for capacity_distribution in options_capacity_distribution:
+            print(f"Training GP for num_warehouses={num_warehouses}, num_customers={num_customers}, capacity_distribution={capacity_distribution}")
             start_time = time.perf_counter()
             train_gp(num_warehouses, num_customers, capacity_distribution)
             training_time_minutes = (time.perf_counter() - start_time) / 60

@@ -197,7 +197,7 @@ def store_theta(num_warehouses, num_customers, capacity_distribution, include_sq
     # point - this reseed makes that explicit and independent of that accident.
     np.random.seed(LVFA_SEED)
 
-    agent = LVFAAgent(env, discount_factor=0.99, alpha=1/200, num_iterations=500, num_simulations=100, stop_criterion=0, include_squared_capacity_feature=include_squared_capacity_feature)
+    agent = LVFAAgent(env, discount_factor=0.99, alpha=1/100, num_iterations=500, num_simulations=100, stop_criterion=0, include_squared_capacity_feature=include_squared_capacity_feature)
     agent.update_policy()
 
     data = {

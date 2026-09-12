@@ -16,6 +16,8 @@ training/**
 
 training_old/
 results_MEIANOITE/
+results/
+backups/
 
 # instances/: manter subpastas, ignorar ficheiros lá dentro, exceto instances_test e instances_extra
 instances/**
