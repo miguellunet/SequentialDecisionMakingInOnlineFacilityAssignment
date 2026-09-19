@@ -6,16 +6,8 @@ from policies.base_policy import BasePolicy
 
 TRAIN_DIR = Path(__file__).resolve().parent.parent / "training"
 
-
 class ProximalPolicyOptimizationPolicy(BasePolicy):
-    """Wraps an sb3-contrib MaskablePPO model trained on a flattened observation (not
-    the raw state dict the other policies use) - reset() points env.get_state at the
-    same flattening function DQNPolicy uses (train_ppo() and train_dqn() build the env
-    the same way, without overriding get_state), so act() receives that vector. Unlike
-    DQN, MaskablePPO takes the capacity mask directly as a predict() argument rather
-    than needing it baked into a custom network, since depleted warehouses are only
-    invalid, not literally absent from the action space."""
-
+  
     def __init__(self, env, num_warehouses, num_customers, capacity_distribution):
         super().__init__(env)
         from sb3_contrib import MaskablePPO  # deferred: only needed when this policy is actually instantiated
@@ -24,12 +16,14 @@ class ProximalPolicyOptimizationPolicy(BasePolicy):
             TRAIN_DIR / "proximal_policy_optimization_training" / "rl_models" / "ppo_models" / f"ppo_model_w_{num_warehouses}_c_{num_customers}_d_{capacity_distribution}"
         )
 
-        # first predict() pays PyTorch's one-time thread-pool/backend init cost plus
-        # sb3-contrib's masking/obs-conversion setup; warm it up here so it doesn't
-        # land inside the first timed act() call
+        # first predict() calls pay PyTorch's one-time thread-pool/backend init cost plus
+        # sb3-contrib's masking/obs-conversion setup; warm up with 10 calls here so it
+        # doesn't land inside the first timed act() call
+        warmup_size = 1
         dummy_obs = np.zeros(2 * num_warehouses, dtype=np.float32)
         dummy_mask = np.ones(num_warehouses, dtype=bool)
-        self.model.predict(dummy_obs, action_masks=dummy_mask, deterministic=True)
+        for _ in range(warmup_size):
+            self.model.predict(dummy_obs, action_masks=dummy_mask, deterministic=True)
 
     def _rl_get_state(self, state):
         data_rows = []

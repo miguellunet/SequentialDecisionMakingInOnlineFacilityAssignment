@@ -7,6 +7,13 @@ import numpy as np
 # same one every run instead of depending on thread-scheduling nondeterminism.
 GUROBI_SEED = 42
 
+# Cap the solve at 1 second so large instances don't blow up runtime, but never return
+# empty-handed: if no incumbent was found by the cutoff, keep solving - now with no
+# time limit but capped to the first solution found - so the caller always gets an
+# assignment (optimal, or the best incumbent at 1s, or the first feasible solution
+# found after 1s).
+#TIME_LIMIT_SECONDS = 1
+
 def perfect_hindsight(instance, warehouses_location, warehouses_initial_capacity, num_customers, divisible = False, divisible_except_first_one = False):
 
     # despite the name, this one function is the shared MIP engine behind several
@@ -71,11 +78,24 @@ def perfect_hindsight(instance, warehouses_location, warehouses_initial_capacity
     m.setParam('OutputFlag', 0)
     m.setParam('Seed', GUROBI_SEED)
 
-    # Optimize model
+    '''
+    # Optimize model, capped at TIME_LIMIT_SECONDS
+    m.setParam('TimeLimit', TIME_LIMIT_SECONDS)
     m.optimize()
+
+    if m.SolCount == 0:
+        # no incumbent within the time limit - keep solving with no time limit, but
+        # stop as soon as the first feasible solution is found, so we always return
+        # an assignment instead of failing on the .x/.ObjVal reads below
+        m.setParam('TimeLimit', GRB.INFINITY)
+        m.setParam('SolutionLimit', 1)
+        m.optimize()
     # NOTE: no m.Status check - on large instances without a full Gurobi license, this
     # can fail to reach GRB.OPTIMAL and the .x/.ObjVal/.Pi reads below will raise an
     # unhelpful AttributeError instead of a clear "no license"/"infeasible" message
+    '''
+
+    m.optimize()
 
     #Get the assignments
     assignments = []

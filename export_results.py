@@ -8,6 +8,7 @@ import time
 from env import InventoryEnv
 from miscelaneous import read_instance
 
+from policies import linear_programming_exact
 from policies.random_policy import RandomPolicy
 from policies.myopic_policy import MyopicPolicy
 from policies.genetic_programming_policy import GeneticProgrammingPolicy
@@ -74,7 +75,7 @@ def export_results(num_warehouses, num_customers, capacity_distribution):
     instances = [f'instances/instances_test/instances_seed_{10000+i}.json' for i in range(1,num_instances+1)]
 
     
-    if num_customers == 50:
+    if num_customers == 400 and num_warehouses == 5:
         
         policies = {
             'perfect_hindsight': PerfectHindsightPolicy(env),
@@ -88,8 +89,7 @@ def export_results(num_warehouses, num_customers, capacity_distribution):
             'linear_programming_heuristic': LinearProgrammingHeuristicPolicy(env, num_warehouses),
             'linear_programming_exact': LinearProgrammingExactPolicy(env, num_warehouses),
             'parameterized_lookahead_approximation': ParameterizedLookaheadApproximationPolicy(env, num_warehouses, num_customers, capacity_distribution),
-            'proximal_policy_optimization': ProximalPolicyOptimizationPolicy(env, num_warehouses, num_customers, capacity_distribution),
-            'exact_value_function': ExactValueFunctionPolicy(env, num_warehouses, num_customers, capacity_distribution)
+            'proximal_policy_optimization': ProximalPolicyOptimizationPolicy(env, num_warehouses, num_customers, capacity_distribution)
         }
 
     else:
@@ -106,7 +106,8 @@ def export_results(num_warehouses, num_customers, capacity_distribution):
                     'linear_programming_heuristic': LinearProgrammingHeuristicPolicy(env, num_warehouses),
                     'linear_programming_exact': LinearProgrammingExactPolicy(env, num_warehouses),
                     'parameterized_lookahead_approximation': ParameterizedLookaheadApproximationPolicy(env, num_warehouses, num_customers, capacity_distribution),
-                    'proximal_policy_optimization': ProximalPolicyOptimizationPolicy(env, num_warehouses, num_customers, capacity_distribution)
+                    'proximal_policy_optimization': ProximalPolicyOptimizationPolicy(env, num_warehouses, num_customers, capacity_distribution),
+                    'exact_value_function': ExactValueFunctionPolicy(env, num_warehouses, num_customers, capacity_distribution)
         }
 
     
@@ -145,7 +146,6 @@ def export_results(num_warehouses, num_customers, capacity_distribution):
     # Save the results to a CSV file
     #results_df.to_csv(f'results/tables/table_w_{num_warehouses}_c_{num_customers}_d_{capacity_distribution}.csv', mode='a', header=not os.path.exists(f'results/tables/table_w_{num_warehouses}_c_{num_customers}_d_{capacity_distribution}.csv'), index=False)
     #full_results_df.to_csv(f'results/full_tables/full_results_w_{num_warehouses}_c_{num_customers}_d_{capacity_distribution}.csv', mode='a', header=not os.path.exists(f'results/full_tables/full_results_w_{num_warehouses}_c_{num_customers}_d_{capacity_distribution}.csv'), index=False)
-
     results_df.to_csv(f'results/tables/table_w_{num_warehouses}_c_{num_customers}_d_{capacity_distribution}.csv', mode='a', header=not os.path.exists(f'results/tables/table_w_{num_warehouses}_c_{num_customers}_d_{capacity_distribution}.csv'), index=False)
     full_results_df.to_csv(f'results/full_tables/full_results_w_{num_warehouses}_c_{num_customers}_d_{capacity_distribution}.csv', mode='a', header=not os.path.exists(f'results/full_tables/full_results_w_{num_warehouses}_c_{num_customers}_d_{capacity_distribution}.csv'), index=False)
     

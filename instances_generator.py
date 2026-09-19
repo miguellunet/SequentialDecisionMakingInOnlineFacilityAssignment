@@ -32,7 +32,7 @@ def create_instances(seed, subfolder=''):
 
 if __name__ == "__main__":
 
-    for seed in range(10001, 11001):
+    for seed in range(10001, 12001):
         create_instances(seed, subfolder='instances_test/')
 
     for seed in range(20001, 25001):

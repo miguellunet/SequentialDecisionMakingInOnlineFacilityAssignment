@@ -65,6 +65,7 @@ class LVFAAgent:
         state, _ = self.env.reset()
         all_data = []  # Stores (features_at_t, reward)
         final_reward = 0
+        final_cost = 0  # reward = -dist, so cost = dist
 
         done = False
         while not done:
@@ -75,24 +76,26 @@ class LVFAAgent:
             features = self.features_of(capacities)
             next_state, reward, done, truncated, info = self.env.step(action)
             final_reward += reward
-        
-            all_data.append((features, reward))
+            cost = -reward  # reward = -dist, so cost = dist
+            final_cost += cost
+
+            all_data.append((features, cost))
             state = next_state
 
         # Update all_data with the (discounted) reward-to-go
-        reward_to_go = 0
+        cost_to_go = 0
         for i in range(len(all_data) - 1, -1, -1):
-            reward_to_go = all_data[i][1] + self.discount_factor * reward_to_go
-            all_data[i] = (all_data[i][0], reward_to_go)
+            cost_to_go = all_data[i][1] + self.discount_factor * cost_to_go
+            all_data[i] = (all_data[i][0], cost_to_go)
 
-        return all_data, final_reward
+        return all_data, final_cost
 
     def fit_v_function(self, all_data):
         """ Update V-function approximation parameters (theta) via OLS, no intercept. """
         X, y = [], []
-        for features, reward_to_go in all_data:
+        for features, cost_to_go in all_data:
             X.append(features)
-            y.append(reward_to_go)
+            y.append(cost_to_go)
 
         model = LinearRegression(fit_intercept=False).fit(X, y)
         #model = LinearRegression.fit(X, y)
@@ -110,17 +113,17 @@ class LVFAAgent:
                 break
             print(f"Iteration {q+1}")
             all_data = []
-            all_final_rewards = []
+            all_final_costs = []
 
             all_thetas.append(self.theta)
 
             for _ in range(self.num_simulations):
-                data, final_reward = self.simulate_policy(self.current_policy)
-                all_final_rewards.append(final_reward)
+                data, final_cost = self.simulate_policy(self.current_policy)
+                all_final_costs.append(final_cost)
                 all_data.extend(data)
 
-            mean_reward = np.mean(all_final_rewards)
-            evolution_data.append(mean_reward)
+            mean_cost = np.mean(all_final_costs)
+            evolution_data.append(mean_cost)
 
             theta_new = self.fit_v_function(all_data)
 
@@ -142,13 +145,13 @@ class LVFAAgent:
             if stop_flag:
                 data = {
                     'iteration': list(range(1, q + 1)),
-                    'mean_reward': evolution_data,
+                    'mean_cost': evolution_data,
                     'theta': [','.join(map(str, np.round(theta, 4))) for theta in all_thetas]
                 }
             else:
                 data = {
                     'iteration': list(range(1, q + 2)),
-                    'mean_reward': evolution_data,
+                    'mean_cost': evolution_data,
                     'theta': [','.join(map(str, np.round(theta, 4))) for theta in all_thetas]
                 }
 
@@ -162,11 +165,11 @@ class LVFAAgent:
         (reward = -dist), so it's a reward-based value and enters with a plus sign here. """
         capacities = np.array(state['warehouses_capacity'], dtype=float)
 
-        rewards = []
+        costs = []
         distances = []
         for i in range(len(capacities)):
             if capacities[i] == 0:
-                rewards.append(float('-inf'))
+                costs.append(float('inf'))
                 distances.append(float('inf'))
                 continue
             distance = distance_calculator(state['static_info']['warehouses_location'][i], state['new_customer'][1:3])
@@ -174,10 +177,10 @@ class LVFAAgent:
             next_capacities = capacities.copy()
             next_capacities[i] -= 1
             next_features = self.features_of(next_capacities)
-            rewards.append(-distance + self.discount_factor * self.value_of(theta, next_features))
+            costs.append(distance + self.discount_factor * self.value_of(theta, next_features))
 
-        best_reward = max(rewards)
-        best_actions = [i for i, r in enumerate(rewards) if r == best_reward]
+        best_cost = min(costs)
+        best_actions = [i for i, c in enumerate(costs) if c == best_cost]
         if len(best_actions) == 1:
             return best_actions[0]
         else:

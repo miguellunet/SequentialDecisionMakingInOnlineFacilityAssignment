@@ -2,7 +2,7 @@ import numpy as np
 
 from miscelaneous import distance_calculator
 from policies.base_policy import BasePolicy
-from training.train_exact_value_function import aggregate_state, read_bellman_values
+from training.train_exact_value_function import aggregate_state, read_dp_values
 
 
 class ExactValueFunctionPolicy(BasePolicy):
@@ -15,7 +15,7 @@ class ExactValueFunctionPolicy(BasePolicy):
 
     def __init__(self, env, num_warehouses, num_customers, capacity_distribution, gamma=1, num_squares=10_000, aggregation=1):
         super().__init__(env)
-        self.values = read_bellman_values(num_warehouses, num_customers, capacity_distribution, gamma, num_squares, aggregation)
+        self.values = read_dp_values(num_warehouses, num_customers, capacity_distribution, gamma, num_squares, aggregation)
         self.gamma = gamma
         self.aggregation = aggregation
 

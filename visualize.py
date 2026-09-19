@@ -1,4 +1,3 @@
-
 import string
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
@@ -249,94 +248,11 @@ def generate_myopic_vs_lookahead_visualization():
     plt.savefig('visualization_examples/myopic_vs_lookahead.pdf', bbox_inches='tight', dpi=600)
     plt.show()
 
-def generate_dla_visualization():
-    fig, axes = plt.subplots(1, 3, figsize=(15, 5))  # 2 rows, 3 columns
-
-    warehouse_colors = ['#2b83ba','#fdae61','#abdda4','#d7191c','#ffffbf']
-    num_warehouses_list = [2, 3, 4]
-
-    ax = axes[0]
-    ax.set_xlim(-100, 100)
-    ax.set_ylim(-100, 100)
-    ax.set_title("Before order arrival\n(16 artificial orders)")
-    ax.set_xticks(np.arange(-100, 101, 50))
-    ax.set_yticks(np.arange(-100, 101, 50))
-    #ax.grid(True, linestyle='--', linewidth=0.5)
-
-    warehouses_location = [[-50, -50], [50, 50]]
-    capacities = [50, 50]
-
-    # Plot warehouses
-    for i, (loc, cap) in enumerate(zip(warehouses_location, capacities)):
-        ax.add_patch(patches.Circle(loc, 10, fill=True, facecolor=warehouse_colors[i % len(warehouse_colors)], edgecolor='black', linewidth=0.5, zorder=2))
-        label = ax.text(loc[0], loc[1]-3, f"{chr(65 + i)}", ha='center', fontsize=15, color='white', fontweight='bold', zorder=3)
-        label.set_path_effects([path_effects.withStroke(linewidth=0.5, foreground='black')])
-
-    for i in range(-75, 76, 50):
-        for j in range(-75, 76, 50):
-            ax.add_patch(patches.Circle((i, j), 2, fill=True, color='black'))
-
-    ax = axes[1]
-    ax.set_xlim(-100, 100)
-    ax.set_ylim(-100, 100)
-    ax.set_title("After order arrival\n(15 artificial and 1 real order)")
-    ax.set_xticks(np.arange(-100, 101, 50))
-    ax.set_yticks(np.arange(-100, 101, 50))
-    #ax.grid(True, linestyle='--', linewidth=0.5)
-
-    # Plot warehouses
-    for i, (loc, cap) in enumerate(zip(warehouses_location, capacities)):
-        ax.add_patch(patches.Circle(loc, 10, fill=True, facecolor=warehouse_colors[i % len(warehouse_colors)], edgecolor='black', linewidth=0.5, zorder=2))
-        label = ax.text(loc[0], loc[1]-3, f"{chr(65 + i)}", ha='center', fontsize=15, color='white', fontweight='bold', zorder=3)
-        label.set_path_effects([path_effects.withStroke(linewidth=0.5, foreground='black')])
-
-    for i in range(-75, 76, 50):
-        for j in range(-75, 76, 50):
-            if not (i == 25 and j == 75):
-                ax.add_patch(patches.Circle((i, j), 2, fill=True, color='black'))
-
-    # Plot a star in coordinates (50,60)
-    ax.add_patch(patches.Rectangle((35 - 5, 70 - 5), 10, 10, fill=True, color='black'))
-
-    ax = axes[2]
-    ax.set_xlim(-100, 100)
-    ax.set_ylim(-100, 100)
-    ax.set_title("Order-facility assignment")
-    ax.set_xticks(np.arange(-100, 101, 50))
-    ax.set_yticks(np.arange(-100, 101, 50))
-    #ax.grid(True, linestyle='--', linewidth=0.5)
-
-    # Plot warehouses
-    for i, (loc, cap) in enumerate(zip(warehouses_location, capacities)):
-        ax.add_patch(patches.Circle(loc, 10, fill=True, facecolor=warehouse_colors[i % len(warehouse_colors)], edgecolor='black', linewidth=0.5, zorder=2))
-        label = ax.text(loc[0], loc[1]-3, f"{chr(65 + i)}", ha='center', fontsize=15, color='white', fontweight='bold', zorder=3)
-        label.set_path_effects([path_effects.withStroke(linewidth=0.5, foreground='black')])
-
-    for i in range(-75, 76, 50):
-        for j in range(-75, 76, 50):
-            if not (i == 25 and j == 75):
-                ax.add_patch(patches.Circle((i, j), 2, fill=True, color='black'))
-                if j > 0:
-                    # Create a red line to the first warehouse
-                    ax.plot([i, warehouses_location[1][0]], [j, warehouses_location[1][1]], color=warehouse_colors[1], linestyle='--')
-                else:
-                    ax.plot([i, warehouses_location[0][0]], [j, warehouses_location[0][1]], color=warehouse_colors[0], linestyle='--')
-
-    # Plot a star in coordinates (50,60)
-    ax.add_patch(patches.Rectangle((35 - 5, 70 - 5), 10, 10, fill=True, color='black'))
-    ax.plot([35, warehouses_location[1][0]], [70, warehouses_location[1][1]], color=warehouse_colors[1], linestyle='--')
-
-    plt.tight_layout()
-    plt.savefig('visualization_examples/dla_example.pdf', dpi=600)
-    plt.show()
-
 
 
 if __name__ == "__main__":
 
-    # Call the function to generate the myopic vs lookahead visualization
-    generate_myopic_vs_lookahead_visualization()
-    '''
+    
     visualize_assignments(
         warehouses_location=[[-50, -50], [50, 50]],
         all_warehouses=[0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0],
@@ -351,10 +267,6 @@ if __name__ == "__main__":
 
     # Call the function to generate the myopic vs lookahead visualization
     generate_myopic_vs_lookahead_visualization()
-
-    # Call the function to generate the DLA visualization
-    generate_dla_visualization()
-    
 
     #Get gif
 
@@ -397,9 +309,3 @@ if __name__ == "__main__":
         state, reward, done, truncated, _ = env.step(action)
 
     visualize(env.warehouses_location, env.warehouses_initial_capacity, env.all_warehouses, env.all_customers, env.all_capacities)
-    '''
-
-    # Call the function to generate the myopic vs lookahead visualization
-    generate_myopic_vs_lookahead_visualization()
-    
-    

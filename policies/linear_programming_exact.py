@@ -31,11 +31,14 @@ class LinearProgrammingExactPolicy(BasePolicy):
         self.act(warmup_state)
 
     def act(self, state):
-        current_instance = generate_regions_instance(state['customers_left'], self.num_regions, self.env.grid_size, state['new_customer'][1:3])
+        
+        current_instance = generate_regions_instance(state['customers_left']-1, self.num_regions, self.env.grid_size, None)
+        '''
         _, baseline_obj, _ = perfect_hindsight(
             current_instance, state['static_info']['warehouses_location'], state['warehouses_capacity'],
-            self.num_regions + 1, divisible=True
+            self.num_regions, divisible=True
         )
+        '''
 
         all_values = []
         for f in range(self.num_warehouses):
@@ -43,12 +46,13 @@ class LinearProgrammingExactPolicy(BasePolicy):
                 all_values.append(np.inf)
                 continue
             new_capacity = state['warehouses_capacity'].copy()
-            new_capacity[f] += 1
+            new_capacity[f] -= 1
             _, obj, _ = perfect_hindsight(
                 current_instance, state['static_info']['warehouses_location'], new_capacity,
-                self.num_regions + 1, divisible=True
+                self.num_regions, divisible=True
             )
-            new_lambda = baseline_obj - obj
+            #new_lambda = baseline_obj - obj
+            new_lambda = obj
             all_values.append(distance_calculator(state['new_customer'][1:3], state['static_info']['warehouses_location'][f]) + new_lambda)
 
         return int(np.argmin(all_values))

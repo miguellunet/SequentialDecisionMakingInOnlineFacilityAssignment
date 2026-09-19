@@ -30,10 +30,10 @@ class LinearProgrammingHeuristicPolicy(BasePolicy):
         self.act(warmup_state)
 
     def act(self, state):
-        current_instance = generate_regions_instance(state['customers_left'], self.num_regions, self.env.grid_size, state['new_customer'][1:3])
+        current_instance = generate_regions_instance(state['customers_left'], self.num_regions, self.env.grid_size, None)
         _, _, dual_values = perfect_hindsight(
             current_instance, state['static_info']['warehouses_location'], state['warehouses_capacity'],
-            self.num_regions + 1, divisible=True
+            self.num_regions, divisible=True
         )
 
         all_values = []

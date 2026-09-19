@@ -26,10 +26,15 @@ class ImitationLearningPolicy(BasePolicy):
         self.model_nn.load_state_dict(state_dict)
         self.model_nn.eval()
 
-        # first forward pass pays PyTorch's one-time thread-pool/backend init cost;
-        # warm it up here so it doesn't land inside the first timed act() call
+        # first forward passes pay PyTorch's one-time thread-pool/backend init cost, plus
+        # a separate one-time cost for building a tensor from a python list; warm up
+        # using the exact same call shape as act() (torch.tensor(list) rather than
+        # torch.zeros) so that cost doesn't land inside the first timed act() call
+        warmup_size = 1
+        dummy_features = [0.0] * (2 * num_warehouses)
         with torch.no_grad():
-            self.model_nn(torch.zeros(1, 2 * num_warehouses, dtype=torch.float32))
+            for _ in range(warmup_size):
+                self.model_nn(torch.tensor(dummy_features, dtype=torch.float32).unsqueeze(0))
 
     def act(self, state):
         

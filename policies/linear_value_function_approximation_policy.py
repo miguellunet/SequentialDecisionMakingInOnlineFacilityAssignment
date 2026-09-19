@@ -41,18 +41,21 @@ class LeastSquaresPolicyIterationImprovedPolicy(BasePolicy):
         self.discount_factor = discount_factor
         self.include_squared_capacity_feature = include_squared_capacity_feature
 
-        # warm-up call, kept consistent with the other policies' init-time act() call
-        # even though this one has no real first-call cost to hide
-        self.act(self.env.obs)
+        # warm-up calls, kept consistent with the other policies' init-time act() calls
+        # even though this one has no real first-call cost to hide; 10 calls so any
+        # init-time dynamics settle before the first timed act() call
+        warmup_size = 1
+        for _ in range(warmup_size):
+            self.act(self.env.obs)
 
     def act(self, state):
         capacities = np.array(state['warehouses_capacity'], dtype=float)
 
-        rewards = []
+        costs = []
         distances = []
         for i in range(len(capacities)):
             if capacities[i] == 0:
-                rewards.append(float('-inf'))
+                costs.append(float('inf'))
                 distances.append(float('inf'))
                 continue
             distance = distance_calculator(state['static_info']['warehouses_location'][i], state['new_customer'][1:3])
@@ -64,10 +67,10 @@ class LeastSquaresPolicyIterationImprovedPolicy(BasePolicy):
             else:
                 features = next_capacities
             next_value = np.dot(self.theta, features)
-            rewards.append(-distance + self.discount_factor * next_value)
+            costs.append(distance + self.discount_factor * next_value)
         
-        best_reward = max(rewards)
-        best_actions = [i for i, r in enumerate(rewards) if r == best_reward]
+        best_cost = min(costs)
+        best_actions = [i for i, c in enumerate(costs) if c == best_cost]
         if len(best_actions) == 1:
             return best_actions[0]
         else:

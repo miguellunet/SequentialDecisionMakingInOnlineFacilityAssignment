@@ -7,13 +7,6 @@ from policies.base_policy import BasePolicy
 
 
 class PointEstimateLookaheadPolicy(BasePolicy):
-    """Monte Carlo Look-Ahead: approximates the demand it can't yet see by sampling
-    the locations of the remaining orders from the same distribution the environment
-    uses to generate customers (i.i.d. uniform over the grid), swaps the real current
-    customer into that sample, and re-solves the assignment LP. Repeats this
-    num_samples times and returns the facility chosen for the current customer most
-    often across the samples, instead of solving a single deterministic point
-    estimate."""
 
     def __init__(self, env, dla_param=1, num_samples=10, seed=42):
         super().__init__(env)

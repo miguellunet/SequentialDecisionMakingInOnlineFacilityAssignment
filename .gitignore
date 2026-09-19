@@ -7,22 +7,23 @@
 # Python cache
 **/__pycache__/
 
-# training/: manter subpastas, ignorar ficheiros de resultados, mas guardar .py e .ipynb
+#Only keep the subfolders with git.keep and store none files in the subfolders
 training/**
 !training/**/
 !training/*.py
-!training/*.ipynb
+!training/*.ipynb 
 !training/**/.gitkeep
 
-training_old/
-results_MEIANOITE/
-results/
-backups/
+#Only keep the subfolders with git.keep and store none files in the subfolders
+results/**
+!results/**/
+!results/**/.gitkeep
 
-# instances/: manter subpastas, ignorar ficheiros lá dentro, exceto instances_test e instances_extra
+# Only keep the subfolders with git.keep and store none files in the subfolders
 instances/**
 !instances/**/
 !instances/**/.gitkeep
-!instances/instances_test/**.gitkeep
-!instances/instances_train_imitation_learning/**.gitkeep
-!instances/instances_train_parameterized_lookahead_approximation/**.gitkeep
+
+#export
+delete_policies_from_results.py
+export_results_extra.py
