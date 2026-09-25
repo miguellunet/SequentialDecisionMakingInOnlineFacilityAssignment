@@ -1,0 +1,9 @@
+num_warehouses,num_customers,capacity_distribution,data_collection_time,function_fitting_time,training_time,accuracy
+2,50,uniform,0.10000,0.33000,0.43000,0.99756
+2,50,uneven,0.09000,0.33000,0.42000,0.99786
+3,50,uniform,0.10000,0.34000,0.44000,0.99224
+3,50,uneven,0.10000,0.34000,0.44000,0.99302
+4,50,uniform,0.11000,0.33000,0.44000,0.98906
+4,50,uneven,0.11000,0.34000,0.45000,0.98770
+5,50,uniform,0.12000,0.34000,0.46000,0.98492
+5,50,uneven,0.12000,0.35000,0.47000,0.98282

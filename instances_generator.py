@@ -3,18 +3,13 @@ import json
 
 def create_instances(seed, subfolder=''):
 
-    # generates one long pool of 1000 orders per seed; individual experiments only need
-    # |T| in {50, 100, 200, 400} (Table 6) and take instance[:num_customers], so every
-    # smaller run is a prefix of the larger runs from the same seed
+    # generates one long pool of 1000 orders per seed
     num_customers = 1000
 
     np.random.seed(seed)
 
     instances = []
     for i in range(num_customers):
-        # [id, x, y, demand] - same shape as env.py's create_customer(). The (-100, 100)
-        # bounds mirror env.py's default grid_size=200 but are NOT read from it, so keep
-        # them in sync manually if grid_size ever changes
         customer = []
         customer.append(i+1)
         customer.append(np.random.uniform(-100, 100))

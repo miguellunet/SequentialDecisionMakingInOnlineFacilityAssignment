@@ -2,16 +2,10 @@ from miscelaneous import distance_calculator
 from gurobipy import GRB, Model
 import numpy as np
 
-# Fixes Gurobi's own internal tie-breaking/search order, so a MIP with multiple
-# equally-optimal solutions (e.g. the binary assignment PHS and PEL solve) returns the
-# same one every run instead of depending on thread-scheduling nondeterminism.
+# Fixes Gurobi's own internal tie-breaking/search order, so a MIP with multiple equally-optimal solutions (e.g. the binary assignment PHS and PEL solve) returns the same one every run instead of depending on thread-scheduling nondeterminism.
 GUROBI_SEED = 42
 
-# Cap the solve at 1 second so large instances don't blow up runtime, but never return
-# empty-handed: if no incumbent was found by the cutoff, keep solving - now with no
-# time limit but capped to the first solution found - so the caller always gets an
-# assignment (optimal, or the best incumbent at 1s, or the first feasible solution
-# found after 1s).
+# Cap the solve at 1 second so large instances don't blow up runtime, but never return an infeasible solution - if the time limit is reached, keep solving with no time limit
 #TIME_LIMIT_SECONDS = 1
 
 def perfect_hindsight(instance, warehouses_location, warehouses_initial_capacity, num_customers, divisible = False, divisible_except_first_one = False):

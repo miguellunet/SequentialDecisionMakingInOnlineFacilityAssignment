@@ -29,7 +29,7 @@ def run_episode(env, policy, instance_file):
 
     instance = read_instance(instance_file)
     env.set_instance(instance)
-    policy.reset(instance)  # let the policy configure env.get_state and any per-episode state before env.reset()
+    policy.reset(instance)
     state, info = env.reset()
 
     done = False
@@ -144,8 +144,6 @@ def export_results(num_warehouses, num_customers, capacity_distribution):
     full_results_df = pd.DataFrame(full_results)
 
     # Save the results to a CSV file
-    #results_df.to_csv(f'results/tables/table_w_{num_warehouses}_c_{num_customers}_d_{capacity_distribution}.csv', mode='a', header=not os.path.exists(f'results/tables/table_w_{num_warehouses}_c_{num_customers}_d_{capacity_distribution}.csv'), index=False)
-    #full_results_df.to_csv(f'results/full_tables/full_results_w_{num_warehouses}_c_{num_customers}_d_{capacity_distribution}.csv', mode='a', header=not os.path.exists(f'results/full_tables/full_results_w_{num_warehouses}_c_{num_customers}_d_{capacity_distribution}.csv'), index=False)
     results_df.to_csv(f'results/tables/table_w_{num_warehouses}_c_{num_customers}_d_{capacity_distribution}.csv', mode='a', header=not os.path.exists(f'results/tables/table_w_{num_warehouses}_c_{num_customers}_d_{capacity_distribution}.csv'), index=False)
     full_results_df.to_csv(f'results/full_tables/full_results_w_{num_warehouses}_c_{num_customers}_d_{capacity_distribution}.csv', mode='a', header=not os.path.exists(f'results/full_tables/full_results_w_{num_warehouses}_c_{num_customers}_d_{capacity_distribution}.csv'), index=False)
     

@@ -1,34 +1,16 @@
 import os
 import sys
 import time
-
-TRAIN_DIR = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.dirname(TRAIN_DIR))
-
 import numpy as np
 import pandas as pd
 from sklearn.linear_model import LinearRegression
 
 from miscelaneous import distance_calculator
 
+TRAIN_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.dirname(TRAIN_DIR))
 
 class LVFAAgent:
-    """Fits a linear state-value function V(s) = theta . warehouses_capacity (raw,
-    non-normalized, no intercept - so V(all-zero capacity) = 0 by construction) via
-    Monte Carlo rollout targets, then acts greedily w.r.t. the one-step Bellman
-    recursion: since reward = -dist (Eq. 9), V(s) is a reward-based (i.e. negative-
-    cost) value, so the greedy choice maximizes -dist(s,f) + gamma * V(s after
-    assigning to f). Unlike
-    least_squares_policy_iteration (which fits a per-(state,action) Q-function on
-    designed/normalized features), here the value function only depends on the state
-    - the customer's location only enters through the immediate cost term dist(s,f),
-    since demand is i.i.d. uniform and carries no information about future cost.
-
-    If include_squared_capacity_feature is True, V(s) gets a second feature per
-    facility (capacity_i^2, alongside capacity_i), each with its own coefficient -
-    not a single feature shared across facilities. This keeps the per-facility
-    additive structure that current_policy's cost(i) comparison relies on: changing
-    facility i's capacity only ever moves facility i's own two terms."""
 
     def __init__(self, env, discount_factor=0.9, alpha=0.1, num_iterations=5, num_simulations=10, stop_criterion=1e-1, include_squared_capacity_feature=False):
         self.env = env

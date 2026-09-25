@@ -2,9 +2,7 @@ import random
 
 from policies.base_policy import BasePolicy
 
-
 class RandomPolicy(BasePolicy):
-    """Picks uniformly at random among the warehouses that still have capacity."""
 
     def __init__(self, env):
         super().__init__(env)

@@ -17,8 +17,7 @@ class ProximalPolicyOptimizationPolicy(BasePolicy):
         )
 
         # first predict() calls pay PyTorch's one-time thread-pool/backend init cost plus
-        # sb3-contrib's masking/obs-conversion setup; warm up with 10 calls here so it
-        # doesn't land inside the first timed act() call
+        # sb3-contrib's masking/obs-conversion setup
         warmup_size = 1
         dummy_obs = np.zeros(2 * num_warehouses, dtype=np.float32)
         dummy_mask = np.ones(num_warehouses, dtype=bool)
@@ -26,6 +25,10 @@ class ProximalPolicyOptimizationPolicy(BasePolicy):
             self.model.predict(dummy_obs, action_masks=dummy_mask, deterministic=True)
 
     def _rl_get_state(self, state):
+
+        # Flatten the state for the RL model
+                # Distance is normalized by the maximum distance (212.13), and capacity is normalized by the initial capacity
+        
         data_rows = []
         for i in range(state['static_info']['num_warehouses']):
             data_rows.append(state['warehouses_distance'][i] / 212.13)
