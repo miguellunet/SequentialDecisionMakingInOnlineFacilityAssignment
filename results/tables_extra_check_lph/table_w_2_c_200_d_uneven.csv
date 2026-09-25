@@ -1,0 +1,4 @@
+Policy,MeanReward,StdReward,MeanTime,StdTime
+imitation_learning,-13799.26,482.73,17772.4576,25518.728972
+exact_value_function,-13676.18,472.97,2772.151828,511.967917
+linear_programming_heuristic,-13678.59,472.15,1965353.161693,1567466.737079

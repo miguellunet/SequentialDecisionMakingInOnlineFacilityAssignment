@@ -1,0 +1,2 @@
+Warehouses,Customers,CapacityDistribution,exact_value_function,imitation_learning,linear_programming_heuristic,Comparison_vs_ImitationLearning,Comparison_vs_LPHeuristic,ExactIsOptimal
+2,200,uneven,-13676.18,-13799.26,-13678.59,exact_value_function better,exact_value_function better,True

@@ -16,9 +16,9 @@ training/proximal_policy_optimization_training/**
 !training/proximal_policy_optimization_training/**/.gitkeep
 
 #Only keep the subfolders with git.keep and store none files in the subfolders
-results/**
-!results/**/
-!results/**/.gitkeep
+#results/**
+#!results/**/
+#!results/**/.gitkeep
 
 # Only keep the subfolders with git.keep and store none files in the subfolders
 instances/**

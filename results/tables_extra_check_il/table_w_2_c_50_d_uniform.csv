@@ -1,0 +1,5 @@
+Policy,MeanReward,StdReward,MeanTime,StdTime
+imitation_learning,-3278.95,234.38,18231.625557,1840.974308
+exact_value_function,-3278.82,234.73,2828.345299,628.580741
+imitation_learning,-3278.95,234.38,18305.270672,1134.879155
+exact_value_function,-3278.82,234.73,2909.505367,7574.217691
