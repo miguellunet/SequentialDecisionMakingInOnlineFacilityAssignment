@@ -21,9 +21,9 @@ training/proximal_policy_optimization_training/**
 #!results/**/.gitkeep
 
 # Only keep the subfolders with git.keep and store none files in the subfolders
-instances/**
-!instances/**/
-!instances/**/.gitkeep
+#instances/**
+#!instances/**/
+#!instances/**/.gitkeep
 
 #export
 delete_policies_from_results.py
