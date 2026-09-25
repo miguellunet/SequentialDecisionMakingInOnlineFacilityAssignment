@@ -12,8 +12,8 @@ training/exact_value_function_training/**
 !training/exact_value_function_training/**/.gitkeep
 training/deep_q_networks_training/**
 !training/deep_q_networks_training/**/.gitkeep
-training/proximal_policy_optimization_training/**
-!training/proximal_policy_optimization_training/**/.gitkeep
+#training/proximal_policy_optimization_training/**
+#!training/proximal_policy_optimization_training/**/.gitkeep
 
 #Only keep the subfolders with git.keep and store none files in the subfolders
 #results/**
